@@ -1,188 +1,179 @@
 {% extends "base.html" %}
 
-{% block title %}CodeAnatomy · Python complexity{% endblock %}
-{% block description %}Trace the time and space complexity of your Python code with a clear, line-aware report.{% endblock %}
+{% block title %}CodeAnatomy · Python complexity analysis{% endblock %}
+{% block description %}Get best, average, and worst-case time and space complexity for your Python code, with the lines that drive the cost.{% endblock %}
 
 {% block styles %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/effects.css') }}">
+<script>
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+        document.documentElement.classList.add('fx-js');
+        setTimeout(function () {
+            if (!document.documentElement.classList.contains('fx-ready')) document.documentElement.classList.remove('fx-js');
+        }, 3000);
+    }
+</script>
+{% endblock %}
+
+{% block overlay %}
+<div class="team-dialog" data-team hidden role="dialog" aria-modal="true" aria-labelledby="team-title">
+    <div class="team-card">
+        <div class="team-head">
+            <p class="team-kicker">PBL Team</p>
+            <h2 id="team-title">The people behind CodeAnatomy</h2>
+            <button class="team-close" type="button" data-team-close aria-label="Close">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        <ul class="team-list">
+            <li class="team-member">
+                <span class="team-avatar" aria-hidden="true">VS</span>
+                <span class="team-name">Vansh Sharma</span>
+                <span class="team-reg"><span>Reg. No.</span><code>2427010625</code></span>
+            </li>
+            <li class="team-member">
+                <span class="team-avatar" aria-hidden="true">MG</span>
+                <span class="team-name">Manya Gupta</span>
+                <span class="team-reg"><span>Reg. No.</span><code>2427010351</code></span>
+            </li>
+            <li class="team-member">
+                <span class="team-avatar" aria-hidden="true">PB</span>
+                <span class="team-name">Priyanshu Bagaria</span>
+                <span class="team-reg"><span>Reg. No.</span><code>2427010644</code></span>
+            </li>
+        </ul>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
 <main class="home">
-    <section class="home-hero">
-        <div class="wrap home-hero-grid">
-            <div class="home-hero-copy">
-                <h1>Know what your code <em>costs</em>.</h1>
-                <p class="hero-copy">
-                    Paste a Python function and get a precise view of its time and space
-                    complexity, the paths that drive it, and the assumptions behind the result.
+    <!-- Hero -->
+    <section class="hero">
+        <div class="wrap hero-grid">
+            <div class="hero-copy">
+                <h1 class="fx-reveal">Know what your code costs <span>before it ships.</span></h1>
+                <p class="hero-lede fx-reveal">
+                    Paste a Python function and get its best, average, and worst-case time and space
+                    complexity, the lines that drive the cost, and the assumptions behind every bound.
                 </p>
-                <div class="hero-actions">
-                    <a class="btn" href="/analysis" data-goto="/analysis" data-hover data-magnet="4">
-                        <span>Analyze Python</span>
+                <div class="hero-actions fx-reveal">
+                    <a class="btn" href="/analysis" data-goto="/analysis" data-hover>
+                        <span>Analyze your code</span>
                         <span class="btn-arrow" aria-hidden="true">
                             <svg viewBox="0 0 15 15" fill="none">
-                                <path d="M2 7.5h11M8.6 3.1 13 7.5l-4.4 4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 7.5h11M8.6 3.1 13 7.5l-4.4 4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </span>
                     </a>
-                </div>
-                <div class="metrics-strip">
-                    <span class="metric-item">O(n log n)</span>
-                    <span class="metric-dot">·</span>
-                    <span class="metric-item">Worst case</span>
-                    <span class="metric-dot">·</span>
-                    <span class="metric-item">Identified in &lt;1s</span>
+                    <button class="btn ghost" type="button" data-team-open aria-haspopup="dialog">
+                        <span>PBL Team</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="hero-preview" aria-label="Example complexity preview">
-                <div class="preview-top">
-                    <span>complexity.py</span>
-                    <span class="preview-status"><i></i>Ready</span>
-                </div>
-                <pre><code><span class="code-muted">01</span> <span class="code-keyword">def</span> group_anagrams(words):
-<span class="code-muted">02</span>     buckets = {}
-<span class="code-muted">03</span>     <span class="code-keyword">for</span> word <span class="code-keyword">in</span> words:
-<span class="code-muted">04</span>         key = <span class="code-string">""</span>.join(sorted(word))
-<span class="code-muted">05</span>         buckets.setdefault(key, []).append(word)
-<span class="code-muted">06</span>     <span class="code-keyword">return</span> list(buckets.values())</code></pre>
-                <div class="preview-bottom">
-                    <span>Time</span><strong>O(n · k log k)</strong>
-                    <span>Space</span><strong>O(n · k)</strong>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="home-how-it-works">
-        <div class="wrap">
-            <div class="section-heading">
-                <p class="section-kicker">Visual workflow</p>
-                <h2>From code to insight<br><span>in three steps.</span></h2>
-            </div>
-            
-            <div class="steps-grid">
-                <div class="step-item">
-                    <span class="step-number">01</span>
-                    <div class="step-content">
-                        <h3>Paste your code</h3>
-                        <p>Drop a Python function into the editor. Syntax highlighting shows your logic clearly.</p>
+            <div class="hero-visual fx-reveal" data-reveal-delay="160" aria-label="Example analysis">
+                <div class="mock">
+                    <div class="mock-bar">
+                        <span class="mock-tab">
+                            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M4 1.75h5.2L12.5 5v9.25H4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                                <path d="M9 1.75V5.2h3.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                            </svg>
+                            anagrams.py
+                        </span>
+                        <span class="mock-status">
+                            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.3 6.5 11l6-6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Analyzed
+                        </span>
                     </div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step-item">
-                    <span class="step-number">02</span>
-                    <div class="step-content">
-                        <h3>Analyze complexity</h3>
-                        <p>Hit analyze and watch as the engine traces loops, calls, and allocations in real time.</p>
+                    <div class="mock-code">
+                        <div class="ln" style="--i:0"><span class="g">1</span><code><span class="c-k">def</span> <span class="c-f">group_anagrams</span><span class="c-p">(</span>words<span class="c-p">):</span></code></div>
+                        <div class="ln" style="--i:1"><span class="g">2</span><code>    <span class="c-d">"""Group words that are anagrams."""</span></code></div>
+                        <div class="ln" style="--i:2"><span class="g">3</span><code>    buckets <span class="c-o">=</span> <span class="c-p">{}</span></code></div>
+                        <div class="ln hot" style="--i:3"><span class="g">4</span><code>    <span class="c-k">for</span> w <span class="c-k">in</span> words<span class="c-p">:</span></code></div>
+                        <div class="ln hot" style="--i:4"><span class="g">5</span><code>        key <span class="c-o">=</span> <span class="c-s">""</span>.<span class="c-f">join</span><span class="c-p">(</span><span class="c-b">sorted</span><span class="c-p">(</span>w<span class="c-p">))</span></code></div>
+                        <div class="ln" style="--i:5"><span class="g">6</span><code>        buckets.<span class="c-f">setdefault</span><span class="c-p">(</span>key, <span class="c-p">[]).</span><span class="c-f">append</span><span class="c-p">(</span>w<span class="c-p">)</span></code></div>
+                        <div class="ln" style="--i:6"><span class="g">7</span><code>    <span class="c-k">return</span> <span class="c-b">list</span><span class="c-p">(</span>buckets.<span class="c-f">values</span><span class="c-p">())</span></code></div>
                     </div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step-item">
-                    <span class="step-number">03</span>
-                    <div class="step-content">
-                        <h3>Read the report</h3>
-                        <p>See best, average, and worst-case bounds with line-by-line reasoning for every result.</p>
+                    <div class="mock-report">
+                        <div class="mock-stat"><span>Worst-case time</span><strong>O(n · k log k)</strong></div>
+                        <div class="mock-stat"><span>Space</span><strong>O(n · k)</strong></div>
+                    </div>
+                    <div class="mock-driver">
+                        <span class="kind">Loop</span>
+                        <span class="where">Line 5 · sorted(w) inside the loop</span>
+                        <code>O(k log k)</code>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="home-showcase">
+    <!-- How it works -->
+    <section class="section" id="how">
         <div class="wrap">
-            <div class="section-heading">
-                <p class="section-kicker">Complexity at a glance</p>
-                <h2>Understand the notation.<br><span>See the difference.</span></h2>
+            <div class="section-head fx-reveal">
+                <p class="section-kicker">How it works</p>
+                <h2>From source to a clear answer in three steps.</h2>
             </div>
-            
-            <div class="showcase-grid">
-                <div class="showcase-card">
-                    <div class="showcase-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M7 17L17 7M17 17L7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <span class="showcase-notation">O(1)</span>
-                    <h3>Constant time</h3>
-                    <p>Single operation, instant access. Array lookup, hash map retrieval.</p>
-                </div>
-                
-                <div class="showcase-card">
-                    <div class="showcase-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M4 20L20 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="4" cy="20" r="2" fill="currentColor"/>
-                            <circle cx="20" cy="4" r="2" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <span class="showcase-notation">O(n)</span>
-                    <h3>Linear time</h3>
-                    <p>One pass through the data. Single loop over the input collection.</p>
-                </div>
-                
-                <div class="showcase-card">
-                    <div class="showcase-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M4 20Q12 4 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-                        </svg>
-                    </div>
-                    <span class="showcase-notation">O(n²)</span>
-                    <h3>Quadratic time</h3>
-                    <p>Nested loops, all pairs. Grows fast with larger inputs.</p>
-                </div>
+            <div class="steps">
+                <article class="step fx fx-reveal">
+                    <span class="step-num">01</span>
+                    <h3>Paste your function</h3>
+                    <p>A full-screen editor with syntax highlighting and line numbers.</p>
+                </article>
+                <article class="step fx fx-reveal">
+                    <span class="step-num">02</span>
+                    <h3>Run the analysis</h3>
+                    <p>Loops, calls, recursion, sorting, and allocation are traced from the source.</p>
+                </article>
+                <article class="step fx fx-reveal">
+                    <span class="step-num">03</span>
+                    <h3>Read the report</h3>
+                    <p>Bounds, reasoning, and cost drivers open below your code, linked to each line.</p>
+                </article>
             </div>
         </div>
     </section>
 
-    <section class="home-details">
+    <!-- Features -->
+    <section class="section">
         <div class="wrap">
-            <div class="section-heading">
-                <p class="section-kicker">One focused workspace</p>
-                <h2>Read the path.<br><span>Understand the cost.</span></h2>
+            <div class="section-head fx-reveal">
+                <p class="section-kicker">What you get</p>
+                <h2>A report you can act on.</h2>
             </div>
-
-            <div class="detail-grid">
-                <article class="detail-card">
-                    <div class="detail-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <span class="detail-number">01</span>
-                    <h3>Trace the code</h3>
-                    <p>Loops, calls, sorting, allocation, and early exits are considered from the source itself.</p>
+            <div class="features">
+                <article class="feature fx fx-reveal">
+                    <span class="feature-icon"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 16V9M8 16V4M13 16v-5M18 16V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+                    <h3>Every case, side by side</h3>
+                    <p>Best, average, and worst-case time plus space, each with the reasoning that separates them.</p>
                 </article>
-                <article class="detail-card">
-                    <div class="detail-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <span class="detail-number">02</span>
-                    <h3>See every case</h3>
-                    <p>Best, average, and worst-case bounds sit beside the reasoning that makes them different.</p>
+                <article class="feature fx fx-reveal">
+                    <span class="feature-icon"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M4 10h7M4 15h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="15.5" cy="12.5" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg></span>
+                    <h3>Cost drivers, linked to lines</h3>
+                    <p>See which loop, call, or allocation dominates, then jump to that line in the editor.</p>
                 </article>
-                <article class="detail-card">
-                    <div class="detail-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 7V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <span class="detail-number">03</span>
-                    <h3>Keep assumptions visible</h3>
-                    <p>Input sizes, data types, and Python operation costs are called out instead of hidden.</p>
+                <article class="feature fx fx-reveal">
+                    <span class="feature-icon"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 9v4.5M10 6.5v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                    <h3>Assumptions in the open</h3>
+                    <p>Input sizes, data types, and the cost of Python built-ins are stated, not hidden.</p>
+                </article>
+                <article class="feature fx fx-reveal">
+                    <span class="feature-icon"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.5"/></svg></span>
+                    <h3>Copy it in one click</h3>
+                    <p>Take the full report as clean plain text into a code review, a ticket, or your notes.</p>
                 </article>
             </div>
 
-            <div class="home-bottom-cta">
-                <p>Have a function to inspect?</p>
-                <a class="text-link" href="/analysis">Open the Python workspace <span aria-hidden="true">↗</span></a>
+            <div class="roadmap fx-reveal">
+                <span class="roadmap-tag">Coming soon</span>
+                <p><strong>PDF export.</strong> We will shortly add a feature to download your complexity report as a PDF.</p>
             </div>
         </div>
     </section>
@@ -191,4 +182,5 @@
 
 {% block scripts %}
 <script type="module" src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/effects.js') }}"></script>
 {% endblock %}

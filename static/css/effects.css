@@ -1,0 +1,114 @@
+/* ==========================================================================
+   effects.css : shared motion and card treatment
+
+   Principles: motion confirms an interaction, it never decorates. No glow,
+   no orbiting light, no pulsing dots, no blur. Everything settles on one
+   ease curve and nothing loops.
+
+   .fx         card with a hairline border. On hover, the border picks up a
+               soft light under the cursor and the fill lifts by one step.
+   .fx-reveal  fades and rises 12px the first time it enters the viewport.
+
+   Per card, set --fx-bg (fill) and --fx-line (resting border colour).
+   The cursor light and the reveal need js/effects.js.
+   ========================================================================== */
+
+:root {
+    --fx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@property --fx-o {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Cards
+   Layers, top to bottom: hover tint, fill, cursor light, resting border.
+   The fill is clipped to the padding box, so the two border layers only
+   show through the 1px transparent border.
+   -------------------------------------------------------------------------- */
+
+.fx {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(rgb(255 255 255 / calc(0.022 * var(--fx-o))), rgb(255 255 255 / calc(0.022 * var(--fx-o)))) padding-box,
+        linear-gradient(var(--fx-bg, var(--surface, #111114)), var(--fx-bg, var(--surface, #111114))) padding-box,
+        radial-gradient(240px circle at var(--fx-mx, 50%) var(--fx-my, 0%), rgb(255 255 255 / calc(0.34 * var(--fx-o))), transparent 70%) border-box,
+        linear-gradient(var(--fx-line, rgb(255 255 255 / 0.1)), var(--fx-line, rgb(255 255 255 / 0.1))) border-box;
+    transition: --fx-o 420ms var(--fx-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .fx:hover {
+        --fx-o: 1;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll reveal
+   -------------------------------------------------------------------------- */
+
+.fx-reveal {
+    transition:
+        opacity 800ms var(--fx-ease),
+        translate 900ms var(--fx-ease),
+        --fx-o 420ms var(--fx-ease);
+}
+
+.fx-js .fx-reveal:not(.is-in) {
+    opacity: 0;
+    translate: 0 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons: replace the sliding colour fill and the cursor-follow drift with
+   a plain, quick state change.
+   -------------------------------------------------------------------------- */
+
+.btn::before {
+    content: none;
+}
+
+.btn,
+.btn:not(.ghost) {
+    transition:
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        color 160ms ease;
+}
+
+.btn:not(.ghost):hover,
+.btn:not(.ghost):focus-visible {
+    --btn-bg: #dcdce0;
+    color: var(--btn-fg);
+}
+
+.btn.ghost:hover,
+.btn.ghost:focus-visible {
+    --btn-bg: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.24);
+}
+
+[data-magnet] {
+    transform: none !important;
+    translate: none !important;
+}
+
+:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.55);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: rgb(255 255 255 / 0.18);
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-js .fx-reveal:not(.is-in) {
+        opacity: 1;
+        translate: none;
+    }
+}

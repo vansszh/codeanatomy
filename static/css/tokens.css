@@ -1,5 +1,7 @@
 /* CodeAnatomy design tokens */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
     /* ---- Elevation ------------------------------------------------------ */
     --bg-1: #050505;
@@ -19,6 +21,27 @@
     --fg-6: #484848;
     --fg-7: #333333;
     --fg-8: #222222;
+
+    /* ---- Neutral UI system (zinc) ---------------------------------------- */
+    --ink-1: #f4f4f5;
+    --ink-2: #d4d4d8;
+    --ink-3: #a1a1aa;
+    --ink-4: #7c7c86;
+    --ink-5: #52525b;
+
+    --surface-0: #08080a;
+    --surface-1: #0c0c0e;
+    --surface-2: #111114;
+    --surface-3: #18181b;
+
+    --line: rgba(255, 255, 255, 0.07);
+    --line-2: rgba(255, 255, 255, 0.11);
+    --line-3: rgba(255, 255, 255, 0.2);
+
+    --tone-best: #7ee2a8;
+    --tone-avg: #7cc4fa;
+    --tone-worst: #f59e8b;
+    --tone-space: #e9c46a;
 
     /* ---- Hue families --------------------------------------------------- */
     --violet-1: #b7f36b;
@@ -82,29 +105,28 @@
     --shadow: rgba(0, 0, 0, 0.72);
     --live: var(--mint-1);
 
-    /* Per-section accent. Sections rebind these three so a whole subtree
-       recolours from one declaration instead of dozens. */
     --accent: var(--violet-1);
     --accent-dim: var(--violet-3);
     --accent-wash: var(--violet-7);
 
     /* ---- Type ----------------------------------------------------------- */
     --serif: Georgia, 'Times New Roman', serif;
-    --sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    --t-xs: 0.6875rem;
-    --t-sm: 0.8125rem;
-    --t-base: 0.9375rem;
-    --t-md: 1.0625rem;
+    /* Larger, more readable scale */
+    --t-xs: 0.75rem;
+    --t-sm: 0.875rem;
+    --t-base: 1rem;
+    --t-md: 1.125rem;
     --t-lg: clamp(1.25rem, 1.6vw, 1.5rem);
     --t-xl: clamp(1.75rem, 3vw, 2.75rem);
     --t-2xl: clamp(2.5rem, 6vw, 5rem);
     --t-3xl: clamp(3rem, 9.4vw, 9.5rem);
 
     /* ---- Space ---------------------------------------------------------- */
-    --gut: clamp(20px, 5vw, 88px);
-    --max: 1400px;
+    --gut: clamp(20px, 4vw, 64px);
+    --max: 1440px;
     --chrome-h: 68px;
 
     /* ---- Motion --------------------------------------------------------- */
@@ -115,6 +137,6 @@
     --mid: 420ms;
     --slow: 760ms;
 
-    --radius: 4px;
-    --radius-lg: 10px;
+    --radius: 10px;
+    --radius-lg: 14px;
 }

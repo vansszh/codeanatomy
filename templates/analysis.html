@@ -3,135 +3,202 @@
 {% block title %}Python complexity · CodeAnatomy{% endblock %}
 {% block description %}Paste Python code and get a line-aware time and space complexity report.{% endblock %}
 
+{% block bodyattrs %} class="page-lock"{% endblock %}
+
 {% block styles %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
-<style>
-    .studio {
-        --accent: var(--violet-1);
-        --accent-dim: var(--violet-3);
-        --accent-wash: var(--violet-7);
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/effects.css') }}">
+{% endblock %}
+
+{% block overlay %}
+<div class="loader" data-loader hidden role="dialog" aria-modal="true" aria-labelledby="loader-title">
+    <div class="loader-card">
+        <div class="loader-main">
+            <div class="loader-head">
+                <div>
+                    <p class="loader-title" id="loader-title">Analyzing your code</p>
+                    <p class="loader-sub" data-loader-stage aria-live="polite">Parsing source</p>
+                </div>
+                <span class="loader-pct" data-loader-pct>0%</span>
+            </div>
+
+            <div class="loader-track" data-loader-track role="progressbar" aria-label="Analysis progress"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i data-loader-bar></i></div>
+
+            <ol class="loader-steps">
+                <li data-step>
+                    <span class="step-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="step-label">Parsing source</span>
+                    <span class="step-time" data-step-time></span>
+                </li>
+                <li data-step>
+                    <span class="step-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="step-label">Mapping loops and calls</span>
+                    <span class="step-time" data-step-time></span>
+                </li>
+                <li data-step>
+                    <span class="step-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="step-label">Tracing recursion and branches</span>
+                    <span class="step-time" data-step-time></span>
+                </li>
+                <li data-step>
+                    <span class="step-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="step-label">Computing bounds</span>
+                    <span class="step-time" data-step-time></span>
+                </li>
+                <li data-step>
+                    <span class="step-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="step-label">Writing report</span>
+                    <span class="step-time" data-step-time></span>
+                </li>
+            </ol>
+        </div>
+
+        <div class="loader-foot">
+            <span class="loader-meta"><span data-loader-lines>0 lines</span><span class="sep">·</span><span data-loader-time>0.0s</span></span>
+            <button class="loader-cancel" type="button" data-loader-cancel>Cancel <kbd>Esc</kbd></button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
-<main class="studio">
-    <div class="wrap">
+<main class="studio" data-studio>
+    <div class="wrap studio-wrap">
         <header class="workspace-head">
-            <div>
-                <h1 class="studio-title">Understand the cost of your <em>code</em>.</h1>
-                <p class="studio-sub">
-                    Paste a Python function. The report traces its real paths and explains
-                    the time and space bounds behind the result.
-                </p>
+            <div class="head-copy">
+                <h1 class="studio-title">Python complexity analysis</h1>
+                <p class="studio-sub">Paste a function and run the analysis. Your report opens right below the code.</p>
+            </div>
+            <div class="workspace-actions">
+                <button class="btn ghost" type="button" data-sample><span>Load example</span></button>
+                <button class="btn" type="button" data-run>
+                    <span>Analyze</span>
+                    <span class="btn-kbd" aria-hidden="true"><span data-mod>Ctrl</span><span>&#8629;</span></span>
+                </button>
             </div>
         </header>
 
-        <div class="code-space">
-            <section class="code-panel" aria-labelledby="source-title">
-                <div class="panel-bar">
-                    <div class="panel-heading">
-                        <span class="panel-index">01</span>
-                        <h2 id="source-title">Python source</h2>
-                    </div>
-                    <div class="panel-tools">
-                        <span class="chip live" data-lang-chip><i></i>Python</span>
-                        <button class="icon-btn" type="button" data-clear aria-label="Clear code">
-                            <svg viewBox="0 0 15 15" fill="none" aria-hidden="true">
-                                <path d="M3.5 3.5l8 8M11.5 3.5l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
+        <section class="code-space" data-space aria-label="Python source">
+            <div class="editor-bar">
+                <div class="file-tab">
+                    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M4 1.75h5.2L12.5 5v9.25H4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                        <path d="M9 1.75V5.2h3.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                        <path d="M6.6 8.6 5.4 10l1.2 1.4M9.4 8.6l1.2 1.4-1.2 1.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>main.py</span>
                 </div>
-
-                <div class="code-surface">
-                    <div class="code-editor-container">
-                        <pre class="line-gutter" data-gutter aria-hidden="true">1</pre>
-                        <div class="code-editor-inner">
-                            <div id="ca-highlight-layer" class="highlight-layer" aria-hidden="true"></div>
-                            <textarea class="code-input" data-input spellcheck="false"
-                                      autocomplete="off" autocapitalize="off"
-                                      aria-label="Python source code"
-                                      placeholder="def process(items):
-    result = []
-    for item in items:
-        result.append(transform(item))
-    return result"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-panel-footer">
-                    <span data-line-count>0 lines</span>
-                    <button class="link-btn" type="button" data-sample>Load example</button>
-                </div>
-            </section>
-
-            <div id="ca-results" class="results-section" hidden>
-                <div class="results-header">
-                    <div class="panel-heading">
-                        <span class="panel-index">02</span>
-                        <h2>Complexity report</h2>
-                    </div>
-                    <button class="icon-btn" type="button" data-copy aria-label="Copy report">
-                        <svg viewBox="0 0 15 15" fill="none" aria-hidden="true">
-                            <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-                            <path d="M10 5V3.5A1.5 1.5 0 0 0 8.5 2H3.5A1.5 1.5 0 0 0 2 3.5v5A1.5 1.5 0 0 0 3.5 10H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <div class="bar-tools">
+                    <button class="tool-btn" type="button" data-clear>
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
+                        <span>Clear</span>
                     </button>
                 </div>
-                <div class="report" data-report></div>
             </div>
-        </div>
 
-        <div class="pane-state" data-state-empty>
-            <div>
-                <span class="state-index">Ready when you are</span>
-                <p>Paste Python code or load the example to see its time and space costs.</p>
+            <div class="editor">
+                <div class="editor-gutter" aria-hidden="true">
+                    <div class="gutter-inner" data-gutter></div>
+                </div>
+                <div class="editor-main">
+                    <div class="editor-layer" data-layer aria-hidden="true">
+                        <div class="line-current" data-line-current></div>
+                        <div class="line-mark" data-line-mark></div>
+                        <pre class="code-highlight" data-highlight></pre>
+                    </div>
+                    <textarea class="code-input" data-input wrap="off" spellcheck="false"
+                              autocomplete="off" autocapitalize="off"
+                              aria-label="Python source code"
+                              placeholder="# Paste or type a Python function here"></textarea>
+                </div>
             </div>
-        </div>
 
-        <div class="pane-state" data-state-working hidden>
-            <div class="working">
-                <span class="working-bar" aria-hidden="true"><i></i></span>
-                <span class="working-word">Tracing code</span>
-                <span class="working-hint">Following loops, calls, and allocations</span>
+            <div class="editor-status">
+                <div class="status-group">
+                    <span data-cursor>Ln 1, Col 1</span>
+                    <span data-line-count>1 line</span>
+                    <span class="status-hint" data-hint hidden></span>
+                </div>
+                <div class="status-group status-optional">
+                    <span>Spaces: 4</span>
+                    <span>UTF-8</span>
+                    <span>Python</span>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="pane-state err" data-state-error hidden>
-            <div>
-                <span class="state-index">Could not analyze</span>
-                <p>Something went wrong.</p>
-            </div>
-        </div>
+        <section class="report-section" data-report-section hidden aria-labelledby="report-title">
+            <header class="report-head">
+                <div>
+                    <p class="report-kicker">Analysis result</p>
+                    <h2 id="report-title">Complexity report</h2>
+                    <p class="report-meta" data-report-meta></p>
+                </div>
+                <div class="report-tools">
+                    <span class="stale-chip" data-stale hidden>Code changed since this run</span>
+                    <button class="tool-btn bordered" type="button" data-rerun>
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M13 8a5 5 0 1 1-1.46-3.54M13 2.5V5h-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Re-run</span>
+                    </button>
+                    <button class="tool-btn bordered is-soon" type="button" data-pdf title="PDF download is coming soon">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Download PDF</span>
+                        <span class="soon-pill">Soon</span>
+                    </button>
+                    <button class="tool-btn bordered" type="button" data-copy aria-label="Copy report">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                            <path d="M10.5 5.5V4A1.5 1.5 0 0 0 9 2.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5" stroke="currentColor" stroke-width="1.3"/>
+                        </svg>
+                        <span>Copy</span>
+                    </button>
+                    <button class="tool-btn bordered" type="button" data-close-report>
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                        </svg>
+                        <span>Close</span>
+                    </button>
+                </div>
+            </header>
 
-        <div id="ca-loader" class="loader-overlay" hidden>
-            <div class="loader-spinner">
-                <div class="spinner-ring ring-1"></div>
-                <div class="spinner-ring ring-2"></div>
-                <div class="spinner-ring ring-3"></div>
-            </div>
-        </div>
+            <div class="report" data-report hidden></div>
 
-        <div class="workspace-actions">
-            <div>
-                <p class="action-label">Ready to trace?</p>
-                <p class="action-hint">Use <b>Ctrl</b> + <b>Enter</b> to run from the code field.</p>
-            </div>
-            <button class="btn" type="button" data-run data-hover data-magnet="4">
-                <span>Analyze complexity</span>
-                <span class="btn-arrow" aria-hidden="true">
-                    <svg viewBox="0 0 15 15" fill="none">
-                        <path d="M2 7.5h11M8.6 3.1 13 7.5l-4.4 4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+            <div class="report-error" data-report-error hidden role="alert">
+                <span class="error-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.8v3.7M8 10.9v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 </span>
-            </button>
-        </div>
+                <div class="error-body">
+                    <p class="error-title">Could not analyze this code</p>
+                    <p class="error-msg" data-error-msg>Something went wrong.</p>
+                    <button class="tool-btn bordered" type="button" data-retry><span>Try again</span></button>
+                </div>
+            </div>
+
+            <aside class="report-soon" data-report-soon aria-label="Coming soon">
+                <span class="report-soon-icon" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="none"><path d="M5 2.75h6.5L15 6.25v11H5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11 2.75v3.75h4M10 9v5M7.75 11.75 10 14l2.25-2.25" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <div class="report-soon-copy">
+                    <p class="report-soon-title">Download this report as a PDF <span class="soon-pill">Coming soon</span></p>
+                    <p class="report-soon-text">We will shortly add a feature to download the report as a PDF. Until then, use Copy to take the full report with you.</p>
+                </div>
+            </aside>
+        </section>
     </div>
 </main>
 {% endblock %}
 
 {% block scripts %}
 <script type="module" src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/effects.js') }}"></script>
 {% endblock %}
