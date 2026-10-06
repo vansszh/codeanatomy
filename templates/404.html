@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Not found &middot; CodeAnatomy{% endblock %}
+{% block description %}That page does not exist.{% endblock %}
+
+{% block styles %}
+<style>
+    /* Scoped to this page. It shares the shell but none of the home page
+       machinery, so its handful of rules live here rather than in base.css. */
+    .lost {
+        display: grid;
+        place-items: center;
+        min-height: calc(100vh - var(--chrome-h) - 190px);
+        padding: 96px 0 120px;
+        text-align: center;
+    }
+
+    .lost-in { max-width: 640px; }
+
+    .lost-code {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        font-family: var(--mono);
+        font-size: clamp(72px, 17vw, 168px);
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.04em;
+    }
+
+    /* Each digit takes its own hue so the page reads as part of the palette
+       rather than a grey dead end. */
+    .lost-code i { font-style: normal; display: inline-block; }
+    .lost-code i:nth-child(1) { color: var(--violet-1); }
+    .lost-code i:nth-child(2) { color: var(--cyan-1); }
+    .lost-code i:nth-child(3) { color: var(--amber-1); }
+
+    .lost-title {
+        margin: 34px 0 0;
+        font-family: var(--serif);
+        font-size: var(--t-2xl);
+        font-weight: 400;
+        line-height: 1.08;
+        letter-spacing: -0.022em;
+        color: var(--fg-1);
+    }
+
+    .lost-title em {
+        font-style: italic;
+        color: var(--cyan-1);
+    }
+
+    .lost-sub {
+        margin: 18px auto 0;
+        max-width: 44ch;
+        font-size: var(--t-sm);
+        line-height: 1.65;
+        color: var(--fg-3);
+    }
+
+    .lost-path {
+        display: inline-block;
+        margin-top: 22px;
+        padding: 7px 13px;
+        border: 1px solid var(--rule-2);
+        border-radius: 7px;
+        background: var(--bg-2);
+        font-family: var(--mono);
+        font-size: var(--t-xs);
+        color: var(--fg-4);
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lost-acts {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 40px;
+    }
+
+    .lost-rule {
+        width: min(420px, 74vw);
+        height: 1px;
+        margin: 52px auto 0;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            var(--violet-4) 22%,
+            var(--cyan-4) 50%,
+            var(--amber-4) 78%,
+            transparent
+        );
+    }
+
+    html.js-motion .lost-in > * { opacity: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="lost">
+    <div class="wrap lost-in">
+        <p class="eyebrow">
+            <span class="dot" aria-hidden="true"></span>
+            No such route
+        </p>
+
+        <p class="lost-code" aria-hidden="true"><i>4</i><i>0</i><i>4</i></p>
+
+        <h1 class="lost-title">This one has <em>no</em> definition.</h1>
+
+        <p class="lost-sub">
+            The address resolved, the page did not. Every working entry point is
+            one line down.
+        </p>
+
+        <p class="lost-path" data-path>&nbsp;</p>
+
+        <div class="lost-acts">
+            <a class="btn" href="/" data-goto="/" data-hover data-magnet="6">
+                <span>Back to the start</span>
+                <span class="btn-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 15 15" fill="none">
+                        <path d="M2 7.5h11M8.6 3.1 13 7.5l-4.4 4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </a>
+            <a class="btn ghost" href="/analysis" data-goto="/analysis" data-hover data-magnet="6">
+                <span>Open workspace</span>
+            </a>
+        </div>
+
+        <div class="lost-rule" aria-hidden="true"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+    import {
+        animate, stagger, utils, REDUCED,
+        wireHovers, wireMagnets, wireScrollState, wireNavigation, releaseMotionGate,
+    } from "{{ url_for('static', filename='js/lib/motion.js') }}";
+
+    // Written from location, not from the server, so the response stays a
+    // static template and the path is never echoed through the page as markup.
+    const slot = document.querySelector('[data-path]');
+    if (slot) {
+        const raw = location.pathname + location.search;
+        slot.textContent = raw.length > 64 ? raw.slice(0, 63) + '…' : raw;
+    }
+
+    wireHovers();
+    wireMagnets();
+    wireScrollState({
+        chrome: document.querySelector('.chrome'),
+        rail: document.querySelector('.rail-fill'),
+    });
+    wireNavigation(document.querySelector('.curtain'));
+
+    const items = Array.from(document.querySelectorAll('.lost-in > *'));
+    // The digits animate individually, so the block that holds them is not
+    // also faded: two nested tweens on opacity and y would compound.
+    const blocks = items.filter((el) => !el.classList.contains('lost-code'));
+    const digits = Array.from(document.querySelectorAll('.lost-code i'));
+
+    if (REDUCED) {
+        utils.set(items, { opacity: 1 });
+        releaseMotionGate();
+    } else {
+        // Set the start states inline before the gate is released. The gate is a
+        // stylesheet rule, and once it is gone anime would read a computed
+        // opacity of 1 and animate from there to there.
+        utils.set(blocks, { opacity: 0, y: 18 });
+        utils.set(digits, { opacity: 0, y: 26, scale: 0.86 });
+        utils.set(items.filter((el) => el.classList.contains('lost-code')), { opacity: 1 });
+        releaseMotionGate();
+
+        animate(blocks, {
+            opacity: 1,
+            y: 0,
+            duration: 820,
+            delay: stagger(74, { start: 90 }),
+            ease: 'outExpo',
+        });
+
+        animate(digits, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1000,
+            delay: stagger(90, { start: 180 }),
+            ease: 'outExpo',
+        });
+    }
+</script>
+{% endblock %}

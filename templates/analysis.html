@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Python complexity · CodeAnatomy{% endblock %}
+{% block description %}Paste Python code and get a line-aware time and space complexity report.{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
+<style>
+    .studio {
+        --accent: var(--violet-1);
+        --accent-dim: var(--violet-3);
+        --accent-wash: var(--violet-7);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="studio">
+    <div class="wrap">
+        <header class="workspace-head">
+            <div>
+                <h1 class="studio-title">Understand the cost of your <em>code</em>.</h1>
+                <p class="studio-sub">
+                    Paste a Python function. The report traces its real paths and explains
+                    the time and space bounds behind the result.
+                </p>
+            </div>
+        </header>
+
+        <div class="code-space">
+            <section class="code-panel" aria-labelledby="source-title">
+                <div class="panel-bar">
+                    <div class="panel-heading">
+                        <span class="panel-index">01</span>
+                        <h2 id="source-title">Python source</h2>
+                    </div>
+                    <div class="panel-tools">
+                        <span class="chip live" data-lang-chip><i></i>Python</span>
+                        <button class="icon-btn" type="button" data-clear aria-label="Clear code">
+                            <svg viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                                <path d="M3.5 3.5l8 8M11.5 3.5l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="code-surface">
+                    <pre class="line-gutter" data-gutter aria-hidden="true">1</pre>
+                    <textarea class="code-input" data-input spellcheck="false"
+                              autocomplete="off" autocapitalize="off"
+                              aria-label="Python source code"
+                              placeholder="def process(items):
+    result = []
+    for item in items:
+        result.append(transform(item))
+    return result"></textarea>
+                </div>
+
+                <div class="code-panel-footer">
+                    <span data-line-count>0 lines</span>
+                    <button class="link-btn" type="button" data-sample>Load example</button>
+                </div>
+            </section>
+
+            <section class="report-panel" aria-labelledby="report-title">
+                <div class="panel-bar">
+                    <div class="panel-heading">
+                        <span class="panel-index">02</span>
+                        <h2 id="report-title">Complexity report</h2>
+                    </div>
+                    <button class="icon-btn" type="button" data-copy aria-label="Copy report">
+                        <svg viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                            <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                            <path d="M10 5V3.5A1.5 1.5 0 0 0 8.5 2H3.5A1.5 1.5 0 0 0 2 3.5v5A1.5 1.5 0 0 0 3.5 10H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="report-body">
+                    <div class="report" data-report hidden></div>
+
+                    <div class="pane-state" data-state-empty>
+                        <div>
+                            <span class="state-index">Ready when you are</span>
+                            <p>Paste Python code or load the example to see its time and space costs.</p>
+                        </div>
+                    </div>
+
+                    <div class="pane-state" data-state-working hidden>
+                        <div class="working">
+                            <span class="working-bar" aria-hidden="true"><i></i></span>
+                            <span class="working-word">Tracing code</span>
+                            <span class="working-hint">Following loops, calls, and allocations</span>
+                        </div>
+                    </div>
+
+                    <div class="pane-state err" data-state-error hidden>
+                        <div>
+                            <span class="state-index">Could not analyze</span>
+                            <p>Something went wrong.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="workspace-actions">
+            <div>
+                <p class="action-label">Ready to trace?</p>
+                <p class="action-hint">Use <b>Ctrl</b> + <b>Enter</b> to run from the code field.</p>
+            </div>
+            <button class="btn" type="button" data-run data-hover data-magnet="4">
+                <span>Analyze complexity</span>
+                <span class="btn-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 15 15" fill="none">
+                        <path d="M2 7.5h11M8.6 3.1 13 7.5l-4.4 4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}

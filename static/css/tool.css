@@ -1,0 +1,808 @@
+/* ==========================================================================
+   tool.css : the complexity surface
+   ========================================================================== */
+
+.studio {
+    position: relative;
+    z-index: 2;
+    padding: 44px 0 64px;
+    min-height: calc(100svh - var(--chrome-h));
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.studio-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px 40px;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--rule-1);
+}
+
+.studio-title {
+    font-family: var(--sans);
+    font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.032em;
+    color: var(--fg-1);
+    margin-top: 14px;
+}
+
+.studio-title em {
+    font-style: normal;
+    color: inherit;
+}
+
+.studio-sub {
+    max-width: 54ch;
+    margin-top: 14px;
+    font-size: var(--t-base);
+    line-height: 1.6;
+    color: var(--fg-4);
+}
+
+/* Segmented mode switch. The indicator is a real element the JS slides, so
+   the travel is one transform rather than two colour fades. */
+.switch {
+    position: relative;
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--rule-2);
+    border-radius: 100px;
+    background: var(--bg-2);
+}
+
+.switch-pill {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    border-radius: 100px;
+    background: var(--accent);
+    will-change: transform, width;
+}
+
+.switch a {
+    position: relative;
+    z-index: 1;
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--fg-4);
+    transition: color var(--mid) var(--ease);
+}
+
+.switch a.on {
+    color: var(--bg-1);
+}
+
+.switch a:not(.on):hover {
+    color: var(--fg-1);
+}
+
+/* --------------------------------------------------------------------------
+   Panes
+   -------------------------------------------------------------------------- */
+
+.panes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--rule-1);
+    border: 1px solid var(--rule-1);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    min-height: 60vh;
+}
+
+.panes.single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--bg-1);
+}
+
+.pane-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 46px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--rule-1);
+    background: rgba(245, 244, 249, 0.014);
+}
+
+.pane-bar h2,
+.pane-bar b {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-5);
+}
+
+.pane-bar .spacer {
+    margin-left: auto;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--rule-2);
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-4);
+    white-space: nowrap;
+}
+
+.chip.live {
+    border-color: var(--accent-dim);
+    background: var(--accent-wash);
+    color: var(--accent);
+}
+
+.chip i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex: none;
+}
+
+/* Small square icon action. Hover is a background lift, nothing that moves. */
+.icon-btn {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius);
+    color: var(--fg-5);
+    transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.icon-btn:hover {
+    background: var(--bg-4);
+    color: var(--fg-1);
+}
+
+.icon-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+.icon-btn.done {
+    color: var(--mint-1);
+}
+
+.pane-body {
+    position: relative;
+    flex: 1;
+    min-height: 340px;
+    display: flex;
+}
+
+/* --------------------------------------------------------------------------
+   Code surfaces
+   -------------------------------------------------------------------------- */
+
+.code-input,
+.code-output {
+    width: 100%;
+    padding: 18px 18px 22px;
+    font-family: var(--mono);
+    font-size: var(--t-sm);
+    line-height: 1.78;
+    letter-spacing: 0;
+    tab-size: 4;
+    color: var(--fg-2);
+    background: transparent;
+    border: 0;
+    resize: none;
+    overflow: auto;
+}
+
+.code-input {
+    display: block;
+    min-height: 340px;
+    outline: none;
+    caret-color: var(--accent);
+}
+
+.code-input::placeholder {
+    color: var(--fg-5);
+}
+
+.code-output {
+    margin: 0;
+    white-space: pre;
+    color: var(--fg-3);
+}
+
+/* Empty and busy states share the pane, so both are absolutely positioned
+   over it and toggled rather than inserted into the flow. */
+.pane-state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    text-align: center;
+    background: var(--bg-1);
+}
+
+.pane-state[hidden] {
+    display: none;
+}
+
+.pane-state p {
+    max-width: 34ch;
+    font-size: var(--t-sm);
+    line-height: 1.6;
+    color: var(--fg-5);
+}
+
+.pane-state .glyph {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 16px;
+    overflow: visible;
+}
+
+.pane-state .glyph path,
+.pane-state .glyph circle,
+.pane-state .glyph rect {
+    fill: none;
+    stroke: var(--fg-6);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.pane-state.err .glyph path,
+.pane-state.err .glyph circle {
+    stroke: var(--rose-1);
+}
+
+.pane-state.err p {
+    color: var(--rose-1);
+}
+
+/* Working state: a marching hairline plus a scrambling status word. Honest
+   about being indeterminate instead of faking a percentage. */
+.working {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.working-bar {
+    position: relative;
+    width: 190px;
+    height: 1px;
+    background: var(--rule-2);
+    overflow: hidden;
+}
+
+.working-bar i {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 42%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: march 1.5s var(--ease-io) infinite;
+}
+
+@keyframes march {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(340%); }
+}
+
+.working-word {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-4);
+}
+
+.working-hint {
+    font-size: var(--t-xs);
+    color: var(--fg-6);
+}
+
+/* --------------------------------------------------------------------------
+   Action bar
+   -------------------------------------------------------------------------- */
+
+.run-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 18px;
+    margin-top: 22px;
+}
+
+.run-bar .spacer {
+    margin-left: auto;
+}
+
+.run-note {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.06em;
+    color: var(--fg-6);
+}
+
+.run-note b {
+    font-weight: 500;
+    color: var(--fg-4);
+}
+
+.btn[disabled] {
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+/* Sample loader, styled as a quiet text action rather than a third button. */
+.link-btn {
+    position: relative;
+    font-size: var(--t-sm);
+    color: var(--fg-4);
+    padding-bottom: 2px;
+}
+
+.link-btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--mid) var(--ease);
+}
+
+.link-btn:hover {
+    color: var(--fg-1);
+}
+
+.link-btn:hover::after {
+    transform: scaleX(1);
+}
+
+/* --------------------------------------------------------------------------
+   Complexity report
+   -------------------------------------------------------------------------- */
+
+.report {
+    flex: 1;
+    padding: 26px 24px 30px;
+    overflow: auto;
+}
+
+.report-summary {
+    max-width: 68ch;
+    font-size: var(--t-md);
+    line-height: 1.62;
+    color: var(--fg-2);
+    margin-bottom: 30px;
+}
+
+.bounds {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--rule-1);
+    border: 1px solid var(--rule-1);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.bound {
+    padding: 18px 18px 20px;
+    background: var(--bg-2);
+}
+
+.bound-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-6);
+    margin-bottom: 12px;
+}
+
+.bound-value {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.bound:nth-child(1) { --accent: var(--mint-1); }
+.bound:nth-child(2) { --accent: var(--cyan-1); }
+.bound:nth-child(3) { --accent: var(--rose-1); }
+.bound:nth-child(4) { --accent: var(--violet-1); }
+
+.bound-reason {
+    font-size: var(--t-sm);
+    line-height: 1.58;
+    color: var(--fg-4);
+}
+
+.report h3 {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-5);
+    margin-bottom: 14px;
+}
+
+.drivers {
+    display: grid;
+    gap: 1px;
+    background: var(--rule-1);
+    border-top: 1px solid var(--rule-1);
+    border-bottom: 1px solid var(--rule-1);
+    margin-bottom: 30px;
+}
+
+.driver {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 120px;
+    gap: 18px;
+    align-items: baseline;
+    padding: 15px 4px;
+    background: var(--bg-1);
+}
+
+.driver-kind {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-1);
+}
+
+.driver-where {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    color: var(--fg-3);
+}
+
+.driver-note {
+    grid-column: 2;
+    font-size: var(--t-sm);
+    line-height: 1.56;
+    color: var(--fg-4);
+}
+
+.driver-cost {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+    justify-self: end;
+    font-family: var(--mono);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--cyan-1);
+}
+
+.notes {
+    display: grid;
+    gap: 10px;
+}
+
+.notes li {
+    display: flex;
+    gap: 12px;
+    font-size: var(--t-sm);
+    line-height: 1.6;
+    color: var(--fg-4);
+}
+
+.notes li::before {
+    content: '';
+    flex: none;
+    width: 5px;
+    height: 5px;
+    margin-top: 9px;
+    border-radius: 50%;
+    background: var(--violet-1);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+    .panes {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bounds {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .driver {
+        grid-template-columns: minmax(0, 1fr) 92px;
+        gap: 10px 14px;
+    }
+
+    .driver-note {
+        grid-column: 1;
+    }
+
+    .driver-cost {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+@media (max-width: 620px) {
+    .bounds {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .studio-head {
+        align-items: flex-start;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Python code space
+   -------------------------------------------------------------------------- */
+
+.studio {
+    padding: 48px 0 78px;
+    min-height: calc(100svh - var(--chrome-h));
+}
+
+.workspace-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--rule-1);
+}
+
+.studio-title {
+    max-width: 700px;
+    margin-top: 18px;
+    font-family: var(--sans);
+    font-size: clamp(2.2rem, 5vw, 4.6rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.06em;
+}
+
+.studio-title em {
+    font-style: normal;
+    color: var(--accent);
+}
+
+.studio-sub {
+    max-width: 55ch;
+    margin-top: 18px;
+    font-size: var(--t-md);
+    line-height: 1.6;
+    color: var(--fg-4);
+}
+
+.code-space {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 1px;
+    min-height: 610px;
+    margin-top: 28px;
+    overflow: hidden;
+    border: 1px solid var(--rule-1);
+    border-radius: var(--radius-lg);
+    background: var(--rule-1);
+}
+
+.code-panel,
+.report-panel {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    background: var(--bg-1);
+}
+
+.panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 62px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--rule-1);
+    background: var(--bg-2);
+}
+
+.panel-heading,
+.panel-tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.panel-index {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.12em;
+    color: var(--accent);
+}
+
+.panel-bar h2 {
+    font-size: var(--t-sm);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--fg-1);
+}
+
+.code-surface {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
+    background: #080808;
+}
+
+.line-gutter {
+    overflow: hidden;
+    margin: 0;
+    padding: 22px 14px 24px 0;
+    font-family: var(--mono);
+    font-size: var(--t-sm);
+    line-height: 1.8;
+    text-align: right;
+    user-select: none;
+    color: var(--fg-6);
+    border-right: 1px solid var(--rule-1);
+}
+
+.code-surface .code-input {
+    display: block;
+    min-height: 0;
+    height: 100%;
+    padding: 22px 22px 24px;
+    font-size: var(--t-sm);
+    line-height: 1.8;
+    color: var(--fg-2);
+    caret-color: var(--accent);
+}
+
+.code-panel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 48px;
+    padding: 0 18px;
+    border-top: 1px solid var(--rule-1);
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    color: var(--fg-6);
+}
+
+.report-body {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    background: var(--bg-1);
+}
+
+.report-body .report {
+    min-width: 0;
+}
+
+.report-body .pane-state {
+    padding: 34px;
+}
+
+.state-index {
+    display: block;
+    margin-bottom: 12px;
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.report-body .pane-state p {
+    max-width: 32ch;
+    font-size: var(--t-base);
+    color: var(--fg-4);
+}
+
+.workspace-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.action-label {
+    font-size: var(--t-sm);
+    color: var(--fg-2);
+}
+
+.action-hint {
+    margin-top: 4px;
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    color: var(--fg-6);
+}
+
+.action-hint b {
+    font-weight: 500;
+    color: var(--fg-4);
+}
+
+@media (max-width: 900px) {
+    .workspace-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .code-space {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .code-panel {
+        min-height: 450px;
+    }
+
+    .report-panel {
+        min-height: 510px;
+    }
+}
+
+@media (max-width: 620px) {
+    .studio {
+        padding-top: 32px;
+    }
+
+    .workspace-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .workspace-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

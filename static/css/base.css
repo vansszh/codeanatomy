@@ -1,0 +1,376 @@
+/* ==========================================================================
+   base.css : reset, page furniture, and the primitives shared by every route
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg-1);
+    color: var(--fg-2);
+    font-family: var(--sans);
+    font-size: var(--t-base);
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+}
+
+img,
+svg,
+canvas {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+::selection {
+    background: var(--violet-4);
+    color: var(--fg-1);
+}
+
+:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* Firefox renders a thin default scrollbar; WebKit needs the explicit rules. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-6) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-5);
+    border: 3px solid var(--bg-1);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-7);
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+
+.shell {
+    position: relative;
+    z-index: 2;
+}
+
+.wrap {
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gut);
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-4);
+}
+
+.eyebrow .dot {
+    position: relative;
+    width: 5px;
+    height: 5px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--live);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+    --btn-fg: var(--bg-1);
+    --btn-bg: var(--fg-1);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    height: 50px;
+    padding: 0 22px;
+    border-radius: var(--radius);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    overflow: hidden;
+    isolation: isolate;
+    will-change: transform;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--accent);
+    transform: translateY(101%);
+    transition: transform 480ms var(--ease-out);
+    will-change: transform;
+}
+
+.btn:hover::before,
+.btn:focus-visible::before {
+    transform: translateY(0);
+}
+
+.btn.ghost {
+    --btn-fg: var(--fg-2);
+    --btn-bg: transparent;
+    box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.btn.ghost::before {
+    background: var(--bg-4);
+}
+
+/* Solid buttons invert against their accent fill; ghost buttons stay neutral. */
+.btn:not(.ghost) {
+    transition: color 260ms var(--ease) 90ms;
+}
+
+.btn:not(.ghost):hover,
+.btn:not(.ghost):focus-visible {
+    color: var(--bg-1);
+}
+
+.btn-arrow {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    flex: none;
+    overflow: hidden;
+}
+
+/* Centred with auto margins, not translateY(-50%), so the transform channel
+   belongs entirely to the motion layer. */
+.btn-arrow svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    width: 15px;
+    height: 15px;
+    will-change: transform;
+}
+
+.btn-arrow svg + svg {
+    left: -15px;
+}
+
+/* --------------------------------------------------------------------------
+   Chrome
+   -------------------------------------------------------------------------- */
+
+.chrome {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 800;
+    height: var(--chrome-h);
+    display: flex;
+    align-items: center;
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--rule-1);
+}
+
+.chrome.stuck {
+    background: var(--bg-1);
+}
+
+.chrome-in {
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gut);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    font-family: var(--sans);
+    font-size: var(--t-md);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--fg-1);
+}
+
+.brand svg {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    overflow: visible;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav a {
+    position: relative;
+    padding: 9px 14px;
+    font-size: var(--t-sm);
+    color: var(--fg-4);
+    transition: color var(--fast) var(--ease);
+}
+
+.nav a:hover,
+.nav a.on {
+    color: var(--fg-1);
+}
+
+/* Underline grows from the centre; the wrapper is the clip so the hairline
+   never spills past the label box. */
+.nav a i {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: 50% 50%;
+    transition: transform var(--mid) var(--ease);
+}
+
+.nav a:hover i,
+.nav a.on i {
+    transform: scaleX(1);
+}
+
+.chrome-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.foot {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--rule-1);
+    padding: 32px 0 28px;
+    background: var(--bg-1);
+}
+
+.foot-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px 32px;
+}
+
+.foot-note {
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.06em;
+    color: var(--fg-6);
+}
+
+.foot-links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.foot-links a {
+    font-size: var(--t-sm);
+    color: var(--fg-5);
+    transition: color var(--fast) var(--ease);
+}
+
+.foot-links a:hover {
+    color: var(--fg-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 1ms !important;
+    }
+}
+
+@media (max-width: 860px) {
+    .nav {
+        display: none;
+    }
+}

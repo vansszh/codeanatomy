@@ -1,0 +1,120 @@
+/* CodeAnatomy design tokens */
+
+:root {
+    /* ---- Elevation ------------------------------------------------------ */
+    --bg-1: #050505;
+    --bg-2: #0b0b0b;
+    --bg-3: #111111;
+    --bg-4: #181818;
+    --bg-5: #222222;
+    --bg-6: #2d2d2d;
+    --bg-7: #3a3a3a;
+
+    /* ---- Foreground ----------------------------------------------------- */
+    --fg-1: #f5f5f5;
+    --fg-2: #d0d0d0;
+    --fg-3: #aaaaaa;
+    --fg-4: #858585;
+    --fg-5: #626262;
+    --fg-6: #484848;
+    --fg-7: #333333;
+    --fg-8: #222222;
+
+    /* ---- Hue families --------------------------------------------------- */
+    --violet-1: #b7f36b;
+    --violet-2: #8cb950;
+    --violet-3: #597633;
+    --violet-4: #425827;
+    --violet-5: #33451f;
+    --violet-6: #28371b;
+    --violet-7: #1e2b16;
+    --violet-8: #172117;
+
+    --cyan-1: #9be7d2;
+    --cyan-2: #76b8a7;
+    --cyan-3: #4d796e;
+    --cyan-4: #3b5d55;
+    --cyan-5: #2f4a44;
+    --cyan-6: #263d39;
+    --cyan-7: #1d302d;
+    --cyan-8: #182522;
+
+    --lime-1: #c1f27b;
+    --lime-2: #94bc60;
+    --lime-3: #607d40;
+    --lime-4: #4b6235;
+    --lime-5: #3c4e2d;
+    --lime-6: #304027;
+    --lime-7: #26331f;
+    --lime-8: #1e281c;
+
+    --amber-1: #e8c887;
+    --amber-2: #b39a65;
+    --amber-3: #776743;
+    --amber-4: #5e5138;
+    --amber-5: #4b422f;
+    --amber-6: #3b3528;
+    --amber-7: #2d2a22;
+    --amber-8: #23211c;
+
+    --rose-1: #e89595;
+    --rose-2: #b67676;
+    --rose-3: #794f4f;
+    --rose-4: #633f3f;
+    --rose-5: #503434;
+    --rose-6: #402b2b;
+    --rose-7: #302323;
+    --rose-8: #251d1d;
+
+    --mint-1: #8ed9ad;
+    --mint-2: #6eaa87;
+    --mint-3: #4a735c;
+    --mint-4: #3b5e4c;
+    --mint-5: #304b3e;
+    --mint-6: #273b32;
+    --mint-7: #1e2e27;
+    --mint-8: #19251f;
+
+    /* ---- Semantic ------------------------------------------------------- */
+    --rule-1: rgba(245, 244, 249, 0.07);
+    --rule-2: rgba(245, 244, 249, 0.13);
+    --rule-3: rgba(245, 244, 249, 0.22);
+    --shadow: rgba(0, 0, 0, 0.72);
+    --live: var(--mint-1);
+
+    /* Per-section accent. Sections rebind these three so a whole subtree
+       recolours from one declaration instead of dozens. */
+    --accent: var(--violet-1);
+    --accent-dim: var(--violet-3);
+    --accent-wash: var(--violet-7);
+
+    /* ---- Type ----------------------------------------------------------- */
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --t-xs: 0.6875rem;
+    --t-sm: 0.8125rem;
+    --t-base: 0.9375rem;
+    --t-md: 1.0625rem;
+    --t-lg: clamp(1.25rem, 1.6vw, 1.5rem);
+    --t-xl: clamp(1.75rem, 3vw, 2.75rem);
+    --t-2xl: clamp(2.5rem, 6vw, 5rem);
+    --t-3xl: clamp(3rem, 9.4vw, 9.5rem);
+
+    /* ---- Space ---------------------------------------------------------- */
+    --gut: clamp(20px, 5vw, 88px);
+    --max: 1400px;
+    --chrome-h: 68px;
+
+    /* ---- Motion --------------------------------------------------------- */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-io: cubic-bezier(0.66, 0, 0.34, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --fast: 180ms;
+    --mid: 420ms;
+    --slow: 760ms;
+
+    --radius: 4px;
+    --radius-lg: 10px;
+}
