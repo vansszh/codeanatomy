@@ -45,15 +45,20 @@
                 </div>
 
                 <div class="code-surface">
-                    <pre class="line-gutter" data-gutter aria-hidden="true">1</pre>
-                    <textarea class="code-input" data-input spellcheck="false"
-                              autocomplete="off" autocapitalize="off"
-                              aria-label="Python source code"
-                              placeholder="def process(items):
+                    <div class="code-editor-container">
+                        <pre class="line-gutter" data-gutter aria-hidden="true">1</pre>
+                        <div class="code-editor-inner">
+                            <div id="ca-highlight-layer" class="highlight-layer" aria-hidden="true"></div>
+                            <textarea class="code-input" data-input spellcheck="false"
+                                      autocomplete="off" autocapitalize="off"
+                                      aria-label="Python source code"
+                                      placeholder="def process(items):
     result = []
     for item in items:
         result.append(transform(item))
     return result"></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="code-panel-footer">
@@ -62,11 +67,11 @@
                 </div>
             </section>
 
-            <section class="report-panel" aria-labelledby="report-title">
-                <div class="panel-bar">
+            <div id="ca-results" class="results-section" hidden>
+                <div class="results-header">
                     <div class="panel-heading">
                         <span class="panel-index">02</span>
-                        <h2 id="report-title">Complexity report</h2>
+                        <h2>Complexity report</h2>
                     </div>
                     <button class="icon-btn" type="button" data-copy aria-label="Copy report">
                         <svg viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -75,32 +80,38 @@
                         </svg>
                     </button>
                 </div>
-                <div class="report-body">
-                    <div class="report" data-report hidden></div>
+                <div class="report" data-report></div>
+            </div>
+        </div>
 
-                    <div class="pane-state" data-state-empty>
-                        <div>
-                            <span class="state-index">Ready when you are</span>
-                            <p>Paste Python code or load the example to see its time and space costs.</p>
-                        </div>
-                    </div>
+        <div class="pane-state" data-state-empty>
+            <div>
+                <span class="state-index">Ready when you are</span>
+                <p>Paste Python code or load the example to see its time and space costs.</p>
+            </div>
+        </div>
 
-                    <div class="pane-state" data-state-working hidden>
-                        <div class="working">
-                            <span class="working-bar" aria-hidden="true"><i></i></span>
-                            <span class="working-word">Tracing code</span>
-                            <span class="working-hint">Following loops, calls, and allocations</span>
-                        </div>
-                    </div>
+        <div class="pane-state" data-state-working hidden>
+            <div class="working">
+                <span class="working-bar" aria-hidden="true"><i></i></span>
+                <span class="working-word">Tracing code</span>
+                <span class="working-hint">Following loops, calls, and allocations</span>
+            </div>
+        </div>
 
-                    <div class="pane-state err" data-state-error hidden>
-                        <div>
-                            <span class="state-index">Could not analyze</span>
-                            <p>Something went wrong.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <div class="pane-state err" data-state-error hidden>
+            <div>
+                <span class="state-index">Could not analyze</span>
+                <p>Something went wrong.</p>
+            </div>
+        </div>
+
+        <div id="ca-loader" class="loader-overlay" hidden>
+            <div class="loader-spinner">
+                <div class="spinner-ring ring-1"></div>
+                <div class="spinner-ring ring-2"></div>
+                <div class="spinner-ring ring-3"></div>
+            </div>
         </div>
 
         <div class="workspace-actions">

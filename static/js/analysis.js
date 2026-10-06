@@ -18,8 +18,92 @@ const reportBox = $('[data-report]');
 const langChip = $('[data-lang-chip]');
 const gutter = $('[data-gutter]');
 const lineCount = $('[data-line-count]');
+const highlightLayer = $('#ca-highlight-layer');
+const resultsSection = $('#ca-results');
+const loader = $('#ca-loader');
 
 let lastReport = null;
+
+/* --------------------------------------------------------------------------
+   Python Syntax Highlighter
+   -------------------------------------------------------------------------- */
+
+const KEYWORDS = ['def', 'class', 'return', 'if', 'elif', 'else', 'for', 'while', 'import', 
+                  'from', 'as', 'in', 'not', 'and', 'or', 'is', 'None', 'True', 'False', 
+                  'pass', 'break', 'continue', 'raise', 'try', 'except', 'finally', 'with', 
+                  'lambda', 'yield', 'del', 'global', 'nonlocal', 'assert'];
+
+const BUILTINS = ['print', 'len', 'range', 'enumerate', 'zip', 'map', 'filter', 'list', 
+                  'dict', 'set', 'tuple', 'type', 'str', 'int', 'float', 'bool', 'any', 
+                  'all', 'sorted', 'reversed', 'min', 'max', 'sum', 'open', 'super', 'self'];
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function highlightPython(code) {
+    let result = escapeHtml(code);
+    
+    // Comments
+    result = result.replace(/(#[^\n]*)/g, '<span class="hl-comment">$1</span>');
+    
+    // Strings (triple quotes first, then single/double)
+    result = result.replace(/("""[\s\S]*?"""|'''[\s\S]*?''')/g, '<span class="hl-string">$1</span>');
+    result = result.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, '<span class="hl-string">$1</span>');
+    
+    // Numbers
+    result = result.replace(/\b(\d+\.?\d*)\b/g, '<span class="hl-number">$1</span>');
+    
+    // Keywords
+    const keywordPattern = new RegExp(`\\b(${KEYWORDS.join('|')})\\b`, 'g');
+    result = result.replace(keywordPattern, '<span class="hl-keyword">$1</span>');
+    
+    // Builtins
+    const builtinPattern = new RegExp(`\\b(${BUILTINS.join('|')})\\b`, 'g');
+    result = result.replace(builtinPattern, '<span class="hl-builtin">$1</span>');
+    
+    // Function definitions (word before '(')
+    result = result.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="hl-func">$1</span>');
+    
+    // Operators
+    result = result.replace(/([+\-*/%=<>!&|^~])/g, '<span class="hl-operator">$1</span>');
+    
+    return result;
+}
+
+function syncHighlight() {
+    if (!highlightLayer || !input) return;
+    const code = input.value;
+    highlightLayer.innerHTML = highlightPython(code);
+}
+
+function syncScroll() {
+    if (!highlightLayer || !input) return;
+    highlightLayer.scrollTop = input.scrollTop;
+    highlightLayer.scrollLeft = input.scrollLeft;
+    if (gutter) gutter.scrollTop = input.scrollTop;
+}
+
+/* --------------------------------------------------------------------------
+   Loader
+   -------------------------------------------------------------------------- */
+
+function showLoader() {
+    if (loader) {
+        loader.hidden = false;
+        document.body.style.pointerEvents = 'none';
+    }
+}
+
+function hideLoader() {
+    if (loader) {
+        loader.hidden = true;
+        document.body.style.pointerEvents = '';
+    }
+}
 
 /* --------------------------------------------------------------------------
    Builders
@@ -86,7 +170,12 @@ function paint(report) {
         reportBox.append(list);
     }
 
-    reportBox.hidden = false;
+    if (resultsSection) {
+        resultsSection.hidden = false;
+        setTimeout(() => {
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 
     if (REDUCED) return;
 
@@ -165,12 +254,11 @@ function syncEditorMeta() {
     const count = Math.max(1, input.value.split('\n').length);
     if (gutter) gutter.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
     if (lineCount) lineCount.textContent = `${count} line${count === 1 ? '' : 's'}`;
+    syncHighlight();
 }
 
 input?.addEventListener('input', syncEditorMeta);
-input?.addEventListener('scroll', () => {
-    if (gutter) gutter.scrollTop = input.scrollTop;
-});
+input?.addEventListener('scroll', syncScroll);
 
 /* --------------------------------------------------------------------------
    Run
@@ -192,11 +280,29 @@ const runner = createRunner({
         lastReport = payload.report || null;
         if (!lastReport) {
             runner.setError('The report came back empty. Try again.');
+            hideLoader();
             return;
         }
         paint(lastReport);
+        hideLoader();
     },
 });
+
+// Hook into run button to show loader
+$('[data-run]')?.addEventListener('click', () => {
+    showLoader();
+});
+
+// Observe working state to sync loader
+const workingState = $('[data-state-working]');
+if (workingState) {
+    const observer = new MutationObserver(() => {
+        if (workingState.hidden) {
+            hideLoader();
+        }
+    });
+    observer.observe(workingState, { attributes: true, attributeFilter: ['hidden'] });
+}
 
 wireCopy($('[data-copy]'), () => asText(lastReport));
 
@@ -208,6 +314,7 @@ $('[data-clear]')?.addEventListener('click', () => {
     syncEditorMeta();
     lastReport = null;
     reportBox.textContent = '';
+    if (resultsSection) resultsSection.hidden = true;
     runner.show('empty');
 });
 
